@@ -1,65 +1,175 @@
 <template>
-  <section class="container">
-    <div>
-      <app-logo/>
-      <h1 class="title">
-        edu-fr-front
-      </h1>
-      <h2 class="subtitle">
-        Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green">Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey">GitHub</a>
+  <div>
+    <!-- 幻灯片 开始 -->
+    <div v-swiper:mySwiper="swiperOption">
+      <div class="swiper-wrapper">
+        <div
+          v-for="item in banners"
+          :key="item.id"
+          class="swiper-slide"
+          style="background: #040B1B;"
+        >
+          <a target="_blank" :href="item.linkUrl">
+            <img :src="item.imageUrl" :alt="item.title" />
+          </a>
+        </div>
       </div>
+      <div class="swiper-pagination swiper-pagination-white"></div>
+      <div class="swiper-button-prev swiper-button-white" slot="button-prev" @click="next"></div>
+      <div class="swiper-button-next swiper-button-white" slot="button-next" @click="prev"></div>
     </div>
-  </section>
+    <!-- 幻灯片 结束 -->
+
+    <div id="aCoursesList">
+      <!-- 网校课程 开始 -->
+      <div>
+        <section class="container">
+          <header class="comm-title">
+            <h2 class="tac">
+              <span class="c-333">热门课程</span>
+            </h2>
+          </header>
+
+         <div>
+            <article class="comm-course-list">
+              <ul class="of" id="bna">
+                <li v-for="course in courses" :key="course.id">
+                  <div class="cc-l-wrap">
+                    <section class="course-img">
+                      <img
+                        :src="course.cover"
+                        class="img-responsive"
+                        :alt="course.title"
+                      >
+                      <div class="cc-mask">
+                        <a href="#" title="开始学习" class="comm-btn c-btn-1">开始学习</a>
+                      </div>
+                    </section>
+                    <h3 class="hLh30 txtOf mt10">
+                      <a href="#" :title="course.title" class="course-title fsize18 c-333">{{course.title}}</a>
+                    </h3>
+                    <section class="mt10 hLh20 of">
+                      <span class="fr jgTag bg-green" v-if="Number(course.price) === 0">
+                        <i class="c-fff fsize12 f-fA">免费</i>
+                      </span>
+                      <span class="fl jgAttr c-ccc f-fA">
+                        <i class="c-999 f-fA">9634人学习</i>
+                        |
+                        <i class="c-999 f-fA">9634评论</i>
+                      </span>
+                    </section>
+                  </div>
+                </li>
+               
+              </ul>
+              <div class="clear"></div>
+            </article>
+            <section class="tac pt20">
+              <a href="#" title="全部课程" class="comm-btn c-btn-2">全部课程</a>
+            </section>
+          </div>
+        </section>
+      </div>
+
+      <!-- /网校课程 结束 -->
+
+      <!-- 网校名师 开始 -->
+
+      <div>
+        <section class="container">
+          <header class="comm-title">
+            <h2 class="tac">
+              <span class="c-333">名师大咖</span>
+            </h2>
+          </header>
+
+          <div>
+            <article class="i-teacher-list">
+              <ul class="of">
+                <li v-for="item in teachers" :key="item.id">
+                  <section class="i-teach-wrap">
+                    <div class="i-teach-pic">
+                      <a href="/teacher/1" title="姚晨">
+                        <img :alt="item.name" :src="item.avatar" />
+                      </a>
+                    </div>
+
+                    <div class="mt10 hLh30 txtOf tac">
+                      <a href="/teacher/1" :title="item.name" class="fsize18 c-666">{{item.name}}</a>
+                    </div>
+
+                    <div class="hLh30 txtOf tac">
+                      <span class="fsize14 c-999">{{item.career}}</span>
+                    </div>
+
+                    <div class="mt15 i-q-txt">
+                      <p
+                        class="c-999 f-fA"
+                      >{{item.intro}}
+                        </p>
+                    </div>
+                  </section>
+                </li>
+
+              </ul>
+
+              <div class="clear"></div>
+            </article>
+
+            <section class="tac pt20">
+              <a href="#" title="全部讲师" class="comm-btn c-btn-2">全部讲师</a>
+            </section>
+          </div>
+        </section>
+      </div>
+
+      <!-- /网校名师 结束 -->
+    </div>
+  </div>
 </template>
-
 <script>
-import AppLogo from '~/components/AppLogo.vue'
-
+import Index from "@/api/index/index.js";
 export default {
-  components: {
-    AppLogo
+  data() {
+    return {
+      //輪播圖
+      swiperOption: {
+        loop:false,
+        autoheight:true,
+        spaceBetween:20,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev"
+        },
+
+      },
+      banners: [], //輪播圖數據
+      teachers: [], //教師
+      courses: [] //熱門課程
+    };
+  },
+  created() {
+    //初始化頁面數據
+    this.getIndex();
+  },
+  methods: {
+    prev() {
+      this.mySwiper.slidePrev(); //内置方法，往上翻一页
+      this.swiperIndex = this.mySwiper.snapIndex; //记录页数索引，控制显示隐藏
+    },
+    next() {
+      this.mySwiper.slideNext(); //内置方法，往下翻一页
+      this.swiperIndex = this.mySwiper.snapIndex; //记录页数索引，控制显示隐藏
+    },
+    getIndex() {
+      Index.getInfoToIndex().then(response => {
+        this.banners = response.data.data.list[0];
+        this.courses = response.data.data.list[1];
+        this.teachers = response.data.data.list[2];
+      });
+    }
   }
-}
+};
 </script>
-
-<style>
-.container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
+<style scoped>
 </style>
-

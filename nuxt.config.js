@@ -1,4 +1,11 @@
 module.exports = {
+  plugins: [
+    { src: '~/plugins/nuxt-swiper-plugin.js', ssr: false }
+  ],
+
+  css: [
+    'swiper/swiper-bundle.css'
+  ],
   /*
   ** Headers of the page
   */
@@ -24,7 +31,7 @@ module.exports = {
     /*
     ** Run ESLint on save
     */
-    extend (config, { isDev, isClient }) {
+    extend(config, { isDev, isClient }) {
       if (isDev && isClient) {
         config.module.rules.push({
           enforce: 'pre',
