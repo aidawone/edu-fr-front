@@ -3,14 +3,14 @@ import request from '@/utils/request'
 export default {
     login(user) {
         return request({
-            url: '/center/user/login',
+            url: '/api/user/login',
             method: 'post',
             data: user
         })
     },
     getUserInfo() {
         return request({
-            url: '/center/user/info',
+            url: '/api/user/info',
             method: 'get'
         })
     },

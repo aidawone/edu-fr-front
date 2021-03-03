@@ -124,12 +124,20 @@
   </div>
 </template>
 <script>
-import "~/assets/css/reset.css";
-import "~/assets/css/theme.css";
-import "~/assets/css/global.css";
-import "~/assets/css/web.css";
+import '~/assets/css/reset.css'
+import '~/assets/css/theme.css'
+import '~/assets/css/global.css'
+import '~/assets/css/web.css'
+import '~/assets/css/base.css'
+import '~/assets/css/activity_tab.css'
+import '~/assets/css/bottom_rec.css'
+import '~/assets/css/nice_select.css'
+import '~/assets/css/order.css'
+import '~/assets/css/swiper-3.3.1.min.css'
+import "~/assets/css/pages-weixinpay.css"
 
 import cookie from "js-cookie";
+import Login from "@/api/login";
 export default {
   data() {
     return {
@@ -142,19 +150,38 @@ export default {
         nickname: "",
         sex: ""
       },
-      user: ""
+      user: "",
+      token: "" //微信登录携带的token
     };
   },
   created() {
+    if (this.$route.query && this.$route.query.token) {
+      this.token = this.$route.query.token
+      cookie.set("token", this.token, { domain: "localhost" });
+      this.wxLogin();
+    }
     this.showUserInfo();
   },
   methods: {
+    //显示数据
     showUserInfo() {
-      this.user = cookie.get("user");
+      this.user =  cookie.get("user");
       if (this.user) {
         //将字符串解析成对象
-        this.userInfo = JSON.parse(this.user);
+        this.userInfo = JSON.parse(this.user) ||{};
       }
+    },
+    wxLogin() {
+      //把token值放到cookie里面
+      cookie.set('token',this.token,{domain: 'localhost'})
+      cookie.set('user','',{domain: 'localhost'})
+      //调用接口，根据token值获取用户信息
+      Login.getUserInfo()
+        .then(response => {
+          this.userInfo = response.data.data.items;
+          console.log(this.userInfo);
+          cookie.set("user", this.userInfo, { domain: "localhost" });
+        })
     },
     logout() {
       cookie.remove("token");

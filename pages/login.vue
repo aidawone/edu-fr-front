@@ -43,7 +43,7 @@
               id="weixin"
               class="weixin"
               target="_blank"
-              href="http://qy.free.idcfengye.com/api/ucenter/weixinLogin/login"
+              :href="qrCodeUrl"
             >
               <i class="iconfont icon-weixin" />
             </a>
@@ -64,7 +64,6 @@ import "~/assets/css/sign.css"
 import "~/assets/css/iconfont.css"
 import cookie from "js-cookie"
 import Login from "@/api/login"
-
 export default {
   layout: "sign",
 
@@ -74,7 +73,8 @@ export default {
         mobile: "",
         password: ""
       },
-      loginInfo: {}
+      loginInfo: {},
+      qrCodeUrl: 'http://localhost:81/api/ucenter/wx/login'
     };
   },
 
@@ -89,7 +89,7 @@ export default {
           Login.getUserInfo().then(response => {
           this.loginInfo = response.data.data.items
           //将用户信息记录cookie
-          cookie.set('user', this.loginInfo)
+          cookie.set('user', this.loginInfo,{ domain: 'localhost' })
           //跳转页面
           this.$router.push({path:'/'})
         });
